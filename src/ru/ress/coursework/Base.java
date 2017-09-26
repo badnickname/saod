@@ -39,13 +39,14 @@ public class Base {
         try (FileInputStream fin = new FileInputStream(filename)) {
 
             countPos(pos, len, fin.available());
-            base = new Data[(rpos-lpos)/elmSize];
+            int byteLen = rpos-lpos;
+            base = new Data[byteLen/elmSize];
 
             fin.skip(lpos);
-            byte[] buf = new byte[rpos-lpos];
-            fin.read(buf, 0, (rpos-lpos));
+            byte[] buf = new byte[byteLen];
+            fin.read(buf, 0, (byteLen));
 
-            for (int curElement = 0; curElement<rpos-lpos; curElement+=64) {
+            for (int curElement = 0; curElement<byteLen; curElement+=64) {
                 Data dat = new Data();
                 base[(curElement)/elmSize] = dat;
 

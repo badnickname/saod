@@ -8,16 +8,17 @@ public class Crutch {
     static char toRussian(byte let) {
         if (let < -32 && let >= -128) {
             return (char)(let+1168);
-        } else {
-            if (let <= -17) {
-                return (char)(1120+let);
-            } else {
-                return (char)let;
-            }
         }
+        if (let <= -17) {
+            return (char)(1120+let);
+        }
+        return (char)let;
     }
 
     static int bytesToInt(byte a, byte b) {
-        return (b << 8) + (a+256);
+        int _a = a, _b = b;
+        if (_a<0) _a+=256;
+        if (_b<0) _b+=256;
+        return (_b << 8) + (_a);
     }
 }

@@ -20,15 +20,15 @@ public class Base {
     }
 
     public String getName(int i) {
-        return base[i].name;
+        return new String(base[i].name);
     }
 
     public String getDate(int i) {
-        return base[i].date;
+        return new String(base[i].date);
     }
 
     public String getLawyer(int i) {
-        return base[i].lawyer;
+        return new String(base[i].lawyer);
     }
 
     public int getDeposit(int i) {
@@ -46,22 +46,22 @@ public class Base {
             byte[] buf = new byte[byteLen];
             fin.read(buf, 0, (byteLen));
 
-            for (int curElement = 0; curElement<byteLen; curElement+=64) {
+            for (int curElement = 0; curElement<byteLen; curElement+=elmSize) {
                 Data dat = new Data();
                 base[(curElement)/elmSize] = dat;
 
                 for(int cByte=0; cByte<30; cByte++) {
-                    dat.name += Crutch.toRussian( buf[cByte+curElement] );
+                    dat.name[cByte] = Crutch.toRussian( buf[cByte+curElement] );
                 }
 
                 dat.deposit = Crutch.bytesToInt( buf[30+curElement], buf[31+curElement] );
 
                 for(int cByte=32; cByte<42; cByte++) {
-                    dat.date += Crutch.toRussian( buf[cByte+curElement] );
-
+                    dat.date[cByte-32] = Crutch.toRussian( buf[cByte+curElement] );
                 }
+
                 for(int cByte=42; cByte<64; cByte++) {
-                    dat.lawyer += Crutch.toRussian( buf[cByte+curElement] );
+                    dat.lawyer[cByte-42] = Crutch.toRussian( buf[cByte+curElement] );
                 }
             }
 

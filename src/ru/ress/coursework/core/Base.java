@@ -1,7 +1,6 @@
-package ru.ress.coursework;
+package ru.ress.coursework.core;
 
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -35,11 +34,12 @@ public class Base {
         return base[i].deposit;
     }
 
-    public void read(int pos, int len) {
+    public int read(int pos, int len) {
+        int byteLen = 0;
         try (FileInputStream fin = new FileInputStream(filename)) {
 
             countPos(pos, len, fin.available());
-            int byteLen = rpos-lpos;
+            byteLen = rpos-lpos;
             base = new Data[byteLen/elmSize];
 
             fin.skip(lpos);
@@ -71,7 +71,7 @@ public class Base {
             System.out.println(ex.getMessage());
         }
 
-        return;
+        return byteLen/elmSize;
     }
 
     private void countPos(int pos, int len, int allow) {

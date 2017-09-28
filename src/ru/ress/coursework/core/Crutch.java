@@ -1,9 +1,9 @@
-package ru.ress.coursework;
+package ru.ress.coursework.core;
 
 /**
  * Created by ress on 26.09.17.
  */
-public class Crutch {
+class Crutch {
 
     static char toRussian(byte let) {
         if (let < -32 && let >= -128) {

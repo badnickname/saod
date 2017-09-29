@@ -4,14 +4,15 @@ package ru.ress.coursework.core;
  * Created by ress on 26.09.17.
  */
 class Data {
-    char[] name; //30
+    Data next;
+    byte[] name; //30
     int deposit; //unsigned short int
-    char[] date; //10
-    char[] lawyer; //22
+    byte[] date; //10
+    byte[] lawyer; //22
 
     Data() {
-        name = new char[30];
-        date = new char[10];
-        lawyer = new char[22];
+        name = new byte[30];
+        date = new byte[10];
+        lawyer = new byte[22];
     }
 }

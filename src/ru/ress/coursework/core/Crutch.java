@@ -5,6 +5,14 @@ package ru.ress.coursework.core;
  */
 class Crutch {
 
+    static String getString(byte[] arr) {
+        String out = new String("");
+        for (byte elm : arr) {
+            out += Crutch.toRussian(elm);
+        }
+        return out;
+    }
+
     static char toRussian(byte let) {
         if (let < -32 && let >= -128) {
             return (char)(let+1168);

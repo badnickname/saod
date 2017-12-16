@@ -1,11 +1,14 @@
 package ru.ress.coursework.gui;
 
 import ru.ress.coursework.core.Base;
+import ru.ress.coursework.core.compression.Utils;
+import ru.ress.coursework.core.compression.FCoding;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 /**
  * Created by ress on 28.09.17.
@@ -19,8 +22,8 @@ public class MainForm extends JFrame {
     private JList<String> lLaw;
     private JList<Integer> lDep, lNumb;
 
-    private JTextField tfSize, tfFind;
-    private JButton btnSize, btnSortDep, btnSortDate, btnLeft, btnRight, btnFind;
+    private JTextField tfSize, tfFind, tfFindTree;
+    private JButton btnSize, btnSortDep, btnSortDate, btnLeft, btnRight, btnFind, btnFindTree, btnCompress, btnGetSource;
     private Base base;
 
     private int elmCount;
@@ -39,6 +42,7 @@ public class MainForm extends JFrame {
         JPanel buildPanel = new JPanel();
         JPanel sortPanel = new JPanel();
         JPanel findPanel = new JPanel();
+        JPanel findTreePanel = new JPanel();
 
         btnLeft = new JButton("<<");
         btnLeft.addActionListener(new NavigationButtonListener(this, NavigationButtonListener.left));
@@ -57,6 +61,21 @@ public class MainForm extends JFrame {
         tfFind = new JTextField("15000",10);
         btnFind = new JButton("Найти");
         btnFind.addActionListener(new FindButtonListener());
+        btnFind.setEnabled(false);
+        tfFind.setEnabled(false);
+
+        tfFindTree = new JTextField("15000",10);
+        btnFindTree = new JButton("Найти (BTree)");
+        btnFindTree.addActionListener(new FindTreeButtonListener());
+        btnFindTree.setEnabled(false);
+        tfFindTree.setEnabled(false);
+
+        btnCompress = new JButton("СЖАТЬ");
+        btnCompress.addActionListener(new CompressButtonListener());
+
+        btnGetSource = new JButton("Исходный");
+        btnGetSource.addActionListener(new GetSourceButtonListener());
+
 
         lmName = new DefaultListModel<String>();
         lmDep = new DefaultListModel<Integer>();
@@ -84,13 +103,18 @@ public class MainForm extends JFrame {
 
         sortPanel.add(btnSortDate);
         sortPanel.add(btnSortDep);
+        sortPanel.add(btnGetSource);
+        sortPanel.add(btnCompress);
 
         findPanel.add(tfFind);
         findPanel.add(btnFind);
+        findTreePanel.add(tfFindTree);
+        findTreePanel.add(btnFindTree);
 
         botPanel.add(buildPanel);
         botPanel.add(sortPanel);
         botPanel.add(findPanel);
+        botPanel.add(findTreePanel);
 
         cont.add(leftPanel);
         cont.add(new JScrollPane(leftPanel));
@@ -156,6 +180,10 @@ public class MainForm extends JFrame {
             catch (NumberFormatException nfe) {
                 JOptionPane.showMessageDialog(frame,"Возникла ошибка!\n"+nfe.getMessage());
             }
+            btnFind.setEnabled(true);
+            tfFind.setEnabled(true);
+            btnFindTree.setEnabled(true);
+            tfFindTree.setEnabled(true);
         }
     }
 
@@ -178,6 +206,43 @@ public class MainForm extends JFrame {
                 curIndex = 0;
                 clearList();
                 printList(20);
+            }
+        }
+    }
+
+    private class GetSourceButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            elmCount = base.getSource();
+            curIndex = 0;
+            clearList();
+            printList(20);
+        }
+    }
+
+    private class CompressButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            FCoding fc = new FCoding();
+            ArrayList<Boolean> bitlist = fc.getFromFile("testBase3.dat");
+            byte[] data = fc.getArray(bitlist);
+            Utils.writeDataTo("compressed.dat", data);
+            new CompressedForm(bitlist, fc.getLetters(), fc.getFactor());
+        }
+    }
+
+    private class FindTreeButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            try {
+                int key = Integer.valueOf(tfFindTree.getText());
+                curIndex = 0;
+                clearList();
+                elmCount = base.searchByTree(key);
+                printList(20);
+            }
+            catch (NumberFormatException nfe) {
+                JOptionPane.showMessageDialog(null,"Возникла ошибка!\n"+nfe.getMessage());
             }
         }
     }

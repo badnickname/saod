@@ -1,5 +1,7 @@
 package ru.ress.coursework.core;
 
+import ru.ress.coursework.core.tree.btree.BTree;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,9 +14,11 @@ public class Base {
     private int lpos, rpos;
     private byte elmSize;
     private ArrayList<Data> outputBase;
-    private Data sourceList, headList;
+    private Data sourceList;
+    private ArrayList<Data> sourceData;
 
     public Base(String name) {
+        sourceData = new ArrayList<>();
         filename = name;
         elmSize = 64;
         rpos = lpos = 0;
@@ -47,10 +51,11 @@ public class Base {
             byte[] buf = new byte[byteLen];
             fin.read(buf, 0, (byteLen));
 
-            Data head = sourceList = headList = null;
+            Data head = sourceList = null;
 
             for (int curElement = 0; curElement<byteLen; curElement+=elmSize) {
                 Data dat = new Data();
+                sourceData.add(dat);
                 if (head == null) {
                     head = sourceList = dat;
                 } else {
@@ -83,15 +88,25 @@ public class Base {
         return byteLen/elmSize;
     }
 
+    public int getSource() {
+        int pos = 0;
+        for(int i=0; i<sourceData.size()-1; i++) {
+            sourceData.get(i).next = sourceData.get(i+1);
+            pos = i;
+        }
+        sourceData.get(pos+1).next = null;
+        sourceList = sourceData.get(0);
+        outputBase = sourceData;
+        return outputBase.size();
+    }
+
     public int sortDate() {
-        getOutput(headList);
         sourceList = (new DigitalSort(sourceList)).sort(DigitalSort.date);
         getOutput(sourceList);
         return outputBase.size();
     }
 
     public int sortDep() {
-        getOutput(headList);
         sourceList = (new DigitalSort(sourceList)).sort(DigitalSort.deposit);
         getOutput(sourceList);
         return outputBase.size();
@@ -101,6 +116,21 @@ public class Base {
         sortDep();
         outputBase = BinarySearch.find(key,outputBase);
         if (outputBase == null) return 0;
+        return outputBase.size();
+    }
+
+    public int searchByTree(int key) {
+        //sortDep();
+        BTree tree = new BTree();
+        tree.makeTreeFromArray(outputBase);
+        ArrayList<Data> results = new ArrayList<>();
+        Data p = tree.search(key);
+        sortDep();
+        while (p!=null && p.deposit==key) {
+            results.add(p);
+            p = p.next;
+        }
+        outputBase = results;
         return outputBase.size();
     }
 
